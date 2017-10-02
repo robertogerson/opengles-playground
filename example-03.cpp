@@ -9,18 +9,21 @@ struct sprite {
     GLfloat tex_coords [2];
 };
 
+int window_width = 800;
+int window_height = 600;
+
 int main() {
   auto window = SDL_CreateWindow(
         "triangle",
         SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-        800, 600,
+        window_width, window_height,
         SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE );
 
-  auto glcontext = SDL_GL_CreateContext(window);
+  auto glcontext = SDL_GL_CreateContext (window);
   struct sprite vertices[] = { {{-0.5f, -0.5f}, {1.0, 0.0, 0.0}, {1.0f, 1.0f}},
-                                   {{0.5f,  -0.5f}, {0.0, 1.0, 0.0}, {0.0f, 1.0f}},
-                                   {{0.5f,   0.5f}, {0.0, 0.0, 1.0}, {0.0f, 0.0f}},
-                                   {{-0.5f,  0.5f}, {1.0, 1.0, 0.0}, {1.0f, 0.0f}} };
+                               {{0.5f,  -0.5f}, {0.0, 1.0, 0.0}, {0.0f, 1.0f}},
+                               {{0.5f,   0.5f}, {0.0, 0.0, 1.0}, {0.0f, 0.0f}},
+                               {{-0.5f,  0.5f}, {1.0, 1.0, 0.0}, {1.0f, 0.0f}} };
 
   GLuint elements[] = {
     0, 1, 2,
@@ -47,10 +50,10 @@ int main() {
       printf ("Error! Could not load image.");
       exit (1);
     }
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S , GL_REPEAT);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T , GL_REPEAT);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S , GL_REPEAT);
+  glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T , GL_REPEAT);
+  glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
   /* load in texture */
   glTexImage2D(	GL_TEXTURE_2D, 0, sdl_surf->format->BytesPerPixel,
@@ -101,11 +104,25 @@ int main() {
       SDL_Event e;
       while(SDL_PollEvent(&e))
         {
-          if(e.type == SDL_QUIT) return 0;
+          if (e.type == SDL_WINDOWEVENT)
+            {
+              switch (e.window.event)
+                {
+                case SDL_WINDOWEVENT_RESIZED:
+                  window_width = e.window.data1;
+                  window_height = e.window.data2;
+                  break;
+                }
+            }
+          else if(e.type == SDL_QUIT) return 0;
+
         }
 
+      glViewport (0, 0, window_width, window_height);
       glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
       glClear(GL_COLOR_BUFFER_BIT);
+
+      vertices[0].pos[0] -= 0.0005;
 
       glEnableVertexAttribArray (posAttr);
       glVertexAttribPointer(posAttr, 2, GL_FLOAT, GL_FALSE,
@@ -113,16 +130,16 @@ int main() {
                             0);
 
       glEnableVertexAttribArray (colorAttr);
-      glVertexAttribPointer(colorAttr, 3, GL_FLOAT, GL_FALSE,
-                            sizeof (struct sprite),
-                            (GLvoid*) (2 * sizeof (GLfloat)) );
+      glVertexAttribPointer (colorAttr, 3, GL_FLOAT, GL_FALSE,
+                             sizeof (struct sprite),
+                             (GLvoid*) (2 * sizeof (GLfloat)));
 
       glEnableVertexAttribArray (texAttr);
-      glVertexAttribPointer(texAttr, 2, GL_FLOAT, GL_FALSE,
-                            sizeof (struct sprite),
-                            (GLvoid*) (5 * sizeof (GLfloat)) );
+      glVertexAttribPointer (texAttr, 2, GL_FLOAT, GL_FALSE,
+                             sizeof (struct sprite),
+                             (GLvoid*) (5 * sizeof (GLfloat)) );
 
-//      glDrawArrays(GL_TRIANGLES, 0, 3);
+//      glDrawArrays (GL_TRIANGLES, 0, 3);
       glDrawElements (GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
       SDL_GL_SwapWindow(window);
     }

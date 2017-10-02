@@ -11,8 +11,8 @@ find_package (SDL2 REQUIRED)
 find_package (SDL2_image REQUIRED)
 find_package (OpenGLES2 REQUIRED)
 
-macro (add_example name file)
-  add_executable (${name} ${file})
+macro (add_example name)
+  add_executable (${name} ${name}.cpp)
 
   target_link_libraries (${name}
     OpenGLES2::OpenGLES2
@@ -30,6 +30,7 @@ macro (add_example name file)
   )
 endmacro ()
 
-add_example (example-01 example-01.cpp)
-add_example (example-02 example-02.cpp)
+add_example (example-01)
+add_example (example-02)
+add_example (example-03)
 

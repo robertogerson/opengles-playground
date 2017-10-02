@@ -2,7 +2,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_opengles2.h>
 
-struct attributes {
+struct sprite {
     GLfloat pos [2];
     GLfloat v_color [3];
 };
@@ -16,7 +16,7 @@ int main() {
 
   auto glcontext = SDL_GL_CreateContext(window);
 
-  struct attributes vertices[] = { {{-0.5f, -0.5f}, {1.0, 0.0, 0.0}},
+  struct sprite vertices[] = { {{-0.5f, -0.5f}, {1.0, 0.0, 0.0}},
                                    {{0.5f,  -0.5f}, {0.0, 1.0, 0.0}},
                                    {{0.5f,   0.5f}, {0.0, 0.0, 1.0}},
                                    {{-0.5f,   0.5f}, {1.0, 1.0, 0.0}} };
@@ -78,16 +78,17 @@ int main() {
 
       glEnableVertexAttribArray (posAttr);
       glVertexAttribPointer(posAttr, 2, GL_FLOAT, GL_FALSE,
-                            sizeof (struct attributes),
+                            sizeof (struct sprite),
                             0);
 
       glEnableVertexAttribArray (colorAttr);
       glVertexAttribPointer(colorAttr, 3, GL_FLOAT, GL_FALSE,
-                            sizeof (struct attributes),
+                            sizeof (struct sprite),
                             (GLvoid*) (2 * sizeof (GLfloat)) );
 
 //      glDrawArrays(GL_TRIANGLES, 0, 3);
       glDrawElements (GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
       SDL_GL_SwapWindow(window);
+      SDL_Delay (33);
     }
 }
